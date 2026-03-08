@@ -1,5 +1,3 @@
-# AI-RedTeam-Portfolio
-AI Red Teaming writeups, LLM pentesting reports and adversarial testing research
 # Antonio TOUDJI — AI Red Teamer
 
 I break AI systems before attackers do.
@@ -28,6 +26,14 @@ testing of AI agents and generative models.
 | Platform | Challenge | Category | Difficulty |
 |----------|-----------|----------|------------|
 | TryHackMe | [BankGPT](writeups/tryhackme/bankgpt.md) | Prompt Injection | Easy |
+| Personal Lab | [LLM Security Challenge](writeups/projects/llm-security-challenge.md) | Prompt Injection | Easy → Hard |
+
+---
+
+## Projects
+| Project | Description | Link |
+|---------|-------------|------|
+| LLM Security Challenge | Gamified platform to master prompt injection (12 levels) | [Live](https://lnkd.in/d7e2j8H8) |
 
 ---
 
