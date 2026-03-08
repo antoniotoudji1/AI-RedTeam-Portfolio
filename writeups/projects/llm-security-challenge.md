@@ -47,16 +47,16 @@ higher-priority command than its original guidelines.
 ## Recommendations
 1. **Instruction hierarchy** — system prompt must always 
 override user input
-2. **Input fi<img width="944" height="432" alt="Capture d’écran 2026-03-08 130346" src="https://github.com/user-attachments/assets/49b5e8ed-9d15-43a6-8619-ffc8ef1f3316" />
-<img width="1897" height="879" alt="Capture d’écran 2026-03-08 130416" src="https://github.com/user-attachments/assets/7e88584c-6299-4c9f-ac5d-4a8ecb7ab4a7" />
-ltering** — detect and block override attempts
+2. **Input filtering** — detect and block override attempts
 3. **Output filtering** — never expose secrets in responses
 
 ---
 
 ## Screenshots
-![Payload sent](images/curious-cat-payload.png)
-![Password revealed](images/curious-cat-result.png)
+
+<img width="944" height="432" alt="Capture d’écran 2026-03-08 130346" src="https://github.com/user-attachments/assets/020ee5bd-b142-49f6-8475-a2a412ae3b13" />
+<img width="1897" height="879" alt="Capture d’écran 2026-03-08 130416" src="https://github.com/user-attachments/assets/7ffd65ad-d7a6-4399-ab3c-6fe4e63d17bc" />
+
 
 ---
 
