@@ -66,7 +66,7 @@ Professional pentest reports available in [/reports](reports/) :
 - `AI_Pentest_Report_LLMAPIExploit_EN_AntonioTOUDJI.pdf`
 - `AI_Pentest_Report_IndirectInjection_AntonioTOUDJI.pdf`
 - `AI_Pentest_Report_XSS_OutputHandling_AntonioTOUDJI.pdf`
-- `AI_Audit_VanguardOps_Anna_AntonioTOUDJI.pdf`
+
 
 ---
 
