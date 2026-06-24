@@ -8,12 +8,11 @@
 
 ## About
 
-Specialized in offensive security of LLM systems, AI agents, and automated workflows.
-I find critical vulnerabilities in chatbots, APIs, and AI agents before attackers do.
+Corporate-grade AI Security & LLM Red Teaming Portfolio. Featuring 5+ full-scale penetration testing reports (CVSS 9.8) and advanced multi-agent validation frameworks.
 
 - 📧 antonio.redteam1@gmail.com
 - 🔗 [LinkedIn](https://linkedin.com/in/antonio-toudji-70346b341)
-- 🌐 [Portfolio](https://antohack879.github.io/AI-RedTeam-Portfolio)
+- 🌐 [Portfolio](https://linktr.ee/Antniotdj)
 
 ---
 
